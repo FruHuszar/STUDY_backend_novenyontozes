@@ -1,70 +1,42 @@
 import AllFlowerDisplay from "./AllFlowerDisplay.js";
+import ApiClient from "./ApiClient.js";
+import MockApiClient from "./MockApiClient.js";
+import mockPlants from "./mockPlants.js";
 
-const HOUR = 3600000;
-const DAY = 86400000;
+const API_BASE_URL = "http://localhost:8000";
+const USER_ID = 1;
 
-const mockPlants = [
-  {
-    id: 1,
-    name: "Taiwan rhododendron",
-    latin: "Rhododendron formosanum Hemsl.",
-    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRf23CbbN6hsDgI-RXUrg3sHG1ZTWFTPD1QJXaJNzax3w&s=10",
-    nextWatering: new Date(Date.now() + 2 * DAY + 4 * HOUR),
-    needsAttention: false,
-    phases: {
-      blooming: [4, 5],
-      pruning: [10, 11],
-      fruiting: [7, 8, 9],
-    },
-    facts: [
-      { label: "Family", value: "Ericaceae" },
-      { label: "Habitat", value: "Mid-altitude, island wide" },
-      { label: "Light", value: "Partial shade" },
-    ],
-    note: "Rounded lobes with a slightly notched tip, red to brown spots in the throat.",
-  },
-  {
-    id: 2,
-    name: "Monstera",
-    latin: "Monstera deliciosa Liebm.",
-    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRf23CbbN6hsDgI-RXUrg3sHG1ZTWFTPD1QJXaJNzax3w&s=10",
-    nextWatering: new Date(Date.now() - 30 * 60000),
-    needsAttention: true,
-    phases: {
-      blooming: [6, 7],
-      pruning: [3, 4],
-      fruiting: [],
-    },
-    facts: [
-      { label: "Family", value: "Araceae" },
-      { label: "Habitat", value: "Indoor" },
-      { label: "Light", value: "Bright indirect" },
-    ],
-    note: "Prefers an airy, free draining mix, wipe the leaves to keep them dust free.",
-  },
-  {
-    id: 3,
-    name: "Lavender",
-    latin: "Lavandula angustifolia Mill.",
-    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRf23CbbN6hsDgI-RXUrg3sHG1ZTWFTPD1QJXaJNzax3w&s=10",
-    nextWatering: new Date(Date.now() + 11 * HOUR),
-    needsAttention: false,
-    phases: {
-      blooming: [6, 7, 8],
-      pruning: [3, 9],
-      fruiting: [],
-    },
-    facts: [
-      { label: "Family", value: "Lamiaceae" },
-      { label: "Habitat", value: "Dry and sunny" },
-      { label: "Light", value: "Full sun" },
-    ],
-    note: "Cut back after flowering to keep it compact, it does not tolerate overwatering.",
-  },
-];
+function toggleTrialNote(isBackendUp) {
+  const note = document.querySelector("#trial-note");
 
-export default new AllFlowerDisplay(
-  "#flower-collection",
-  "#flower-detail",
-  mockPlants,
-);
+  if (note) note.hidden = isBackendUp;
+}
+
+async function resolveSource() {
+  const api = new ApiClient(API_BASE_URL);
+
+  try {
+    const plants = await api.getPlants(USER_ID);
+
+    return { client: api, plants, isBackendUp: true };
+  } catch (error) {
+    const mock = new MockApiClient(mockPlants);
+
+    return { client: mock, plants: await mock.getPlants(), isBackendUp: false };
+  }
+}
+
+async function start() {
+  const source = await resolveSource();
+
+  toggleTrialNote(source.isBackendUp);
+
+  return new AllFlowerDisplay(
+    "#flower-collection",
+    "#flower-detail",
+    source.plants,
+    source.client,
+  );
+}
+
+start();

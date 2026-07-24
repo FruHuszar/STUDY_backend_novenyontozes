@@ -472,3 +472,9 @@ body.has-detail .stage {
     padding-bottom: 12px;
   }
 }
+
+.load-error {
+  color: #b3261e;
+  font-size: 0.95rem;
+  padding: 1rem;
+}

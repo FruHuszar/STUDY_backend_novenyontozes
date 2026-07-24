@@ -64,6 +64,11 @@ export default class FlowerDisplay {
     return this.#data;
   }
 
+  update(plantData) {
+    this.#data = { ...this.#data, ...plantData };
+    this.refresh();
+  }
+
   setSelected(isSelected) {
     this.#element.classList.toggle("active", isSelected);
   }
