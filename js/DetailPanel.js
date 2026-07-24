@@ -18,9 +18,9 @@ export default class DetailPanel {
   ];
 
   static #PHASES = {
-    blooming: { label: "Blooming", icon: "🌸", offset: 0 },
-    pruning: { label: "Pruning", icon: "✂️", offset: 16 },
-    fruiting: { label: "Fruiting", icon: "🍏", offset: 32 },
+    blooming: { label: "Blooming", offset: 0 },
+    pruning: { label: "Pruning", offset: 16 },
+    fruiting: { label: "Fruiting", offset: 32 },
   };
 
   static #SVG_NS = "http://www.w3.org/2000/svg";
@@ -73,7 +73,7 @@ export default class DetailPanel {
             .map(
               ([key, phase]) => `
             <button type="button" class="toggle-btn ${key} ${this.#activePhases[key] ? "" : "off"}" data-phase="${key}" aria-pressed="${this.#activePhases[key]}" aria-label="${phase.label}">
-              <span class="toggle-icon">${phase.icon}</span>
+              <span class="toggle-icon" aria-hidden="true"></span>
               <span class="toggle-tip">${phase.label}</span>
             </button>`,
             )
@@ -95,7 +95,10 @@ export default class DetailPanel {
         <p class="detail-timer ${TimeUtils.isDue(data.nextWatering) ? "is-due" : ""}">
           Next watering: <strong>${TimeUtils.format(data.nextWatering)}</strong>
         </p>
-        <button type="button" class="water-btn">💧 Water now</button>
+        <button type="button" class="water-btn">
+          <span class="water-icon" aria-hidden="true"></span>
+          <span class="water-label">Water now</span>
+        </button>
 
         <dl class="detail-facts">
           ${(data.facts || [])
@@ -242,7 +245,9 @@ export default class DetailPanel {
     if (!button) return;
 
     button.disabled = isWatering;
-    button.textContent = isWatering ? "Watering..." : "\u{1F4A7} Water now";
+    button.querySelector(".water-label").textContent = isWatering
+      ? "Watering..."
+      : "Water now";
   }
 
   getElement() {

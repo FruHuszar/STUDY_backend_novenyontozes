@@ -3,33 +3,60 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Garden SQL — plant watering scheduler</title>
     <meta
       name="description"
-      content="This page is a prototype for a gardening helper. Currently only focusing on watering schedules, with push/email alerts. To see the full potential open the github repo."
+      content="Garden SQL is a gardening helper prototype that tracks watering schedules, shows a yearly blooming, pruning and fruiting timeline for every plant, and sends push or email reminders."
     />
-    <title>Garden SQL</title>
-    <link rel="shortcut icon" href="favicon.png" type="image/x-icon" />
-    <link rel="stylesheet" href="style.css" />
+    <meta name="theme-color" content="#5c7031" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Garden SQL" />
+    <meta
+      property="og:description"
+      content="Track watering schedules and the yearly cycle of every plant in your garden."
+    />
+    <meta property="og:image" content="img/blooming.png" />
+    <link rel="icon" href="favicon.png" type="image/png" />
+    <link rel="stylesheet" href="css/index.css" />
     <script type="module" src="js/index.js"></script>
   </head>
   <body>
-    <aside id="trial-note">
-      This page is a prototype for a gardening helper. Currently only focusing
-      on watering schedules, with push/email alerts. To see the full potential
-      and try out the functions, open the github repo at
-      <a
-        href="https://github.com/FruHuszar/STUDY_backend_novenyontozes"
-        target="_blank"
-        >Link
-      </a>
-    </aside>
-    <main>
+    <header>
       <h1>Garden SQL</h1>
-      <h2>Schedule your watering times</h2>
+      <p class="tagline">Schedule your watering times</p>
+    </header>
+
+    <main>
+      <h2 class="visually-hidden">Your plants</h2>
       <div class="stage">
-        <section id="flower-collection"></section>
-        <aside id="flower-detail"></aside>
+        <section
+          id="flower-collection"
+          class="scroll-region"
+          aria-label="Plant collection"
+        ></section>
+        <aside
+          id="flower-detail"
+          class="scroll-region"
+          aria-label="Plant details"
+        ></aside>
       </div>
+      <noscript>
+        <p>Garden SQL needs JavaScript enabled to load your plants.</p>
+      </noscript>
     </main>
+
+    <footer>
+      <p id="trial-note">
+        This page is a prototype for a gardening helper. Currently only focusing
+        on watering schedules, with push and email alerts. To see the full
+        potential and try out the functions, open the
+        <a
+          href="https://github.com/FruHuszar/STUDY_backend_novenyontozes"
+          target="_blank"
+          rel="noopener"
+          >Garden SQL repository on GitHub</a
+        >.
+      </p>
+    </footer>
   </body>
 </html>

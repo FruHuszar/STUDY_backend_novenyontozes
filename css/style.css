@@ -1,0 +1,222 @@
+body {
+  background-color: var(--color-bg);
+  color: var(--color-font);
+}
+
+h1 {
+  color: var(--color-active);
+}
+
+.tagline,
+#trial-note,
+#flower-detail,
+.flower-card p {
+  color: var(--color-middle);
+}
+
+#trial-note a {
+  color: var(--color-active);
+}
+
+.scroll-region {
+  scrollbar-width: auto;
+  scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+  scrollbar-gutter: stable;
+}
+
+.scroll-region::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+}
+
+.scroll-region::-webkit-scrollbar-track {
+  background-color: var(--color-scrollbar-track);
+  border-radius: var(--radius-pill);
+}
+
+.scroll-region::-webkit-scrollbar-thumb {
+  background-color: var(--color-scrollbar-thumb);
+  border-radius: var(--radius-pill);
+}
+
+.scroll-region::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-active);
+}
+
+.flower-card {
+  cursor: pointer;
+}
+
+.flower-card img {
+  object-fit: cover;
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-pill);
+}
+
+.flower-card.active img {
+  border-color: var(--color-active);
+  box-shadow: 0 0 0 var(--ring-width) var(--color-active-soft);
+}
+
+.flower-card:focus-visible {
+  outline: var(--border-width) solid var(--color-active);
+  outline-offset: var(--space-1);
+  border-radius: var(--radius-panel);
+}
+
+.alert-dot {
+  background-color: var(--color-alert);
+  border: var(--border-width) solid var(--color-bg);
+  border-radius: var(--radius-pill);
+}
+
+.flower-card p.is-due,
+.detail-timer.is-due {
+  color: var(--color-alert);
+}
+
+.toggle-btn.blooming,
+.phase-arc.blooming {
+  --phase-color: var(--color-bloom);
+}
+
+.toggle-btn.pruning,
+.phase-arc.pruning {
+  --phase-color: var(--color-prune);
+}
+
+.toggle-btn.fruiting,
+.phase-arc.fruiting {
+  --phase-color: var(--color-fruit);
+}
+
+.toggle-btn {
+  border: 1px solid var(--phase-color);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-surface);
+  cursor: pointer;
+}
+
+.toggle-btn:focus-visible {
+  outline: var(--border-width) solid var(--color-active);
+  outline-offset: var(--border-width);
+}
+
+.toggle-btn.off {
+  opacity: 0.4;
+}
+
+.toggle-btn.off::after {
+  background-color: var(--color-font);
+  transform: rotate(-35deg);
+}
+
+.toggle-icon,
+.water-icon {
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.toggle-icon {
+  background-color: var(--phase-color);
+}
+
+.toggle-btn.blooming {
+  --icon: url("../img/blooming.png");
+}
+
+.toggle-btn.pruning {
+  --icon: url("../img/pruning.png");
+}
+
+.toggle-btn.fruiting {
+  --icon: url("../img/fruiting.png");
+}
+
+.toggle-tip {
+  background-color: var(--color-font);
+  color: var(--color-bg);
+  border-radius: var(--radius-pill);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.toggle-btn:hover .toggle-tip,
+.toggle-btn:focus-visible .toggle-tip {
+  opacity: 1;
+}
+
+.phase-hint .off {
+  opacity: 0.5;
+}
+
+.timeline-base-circle {
+  fill: none;
+  stroke: var(--color-line);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 6;
+  stroke-linecap: round;
+}
+
+.month-tick {
+  stroke: var(--color-middle);
+  stroke-width: 1.2;
+}
+
+.month-text {
+  fill: var(--color-active);
+}
+
+.phase-arc {
+  fill: none;
+  stroke: var(--phase-color);
+  stroke-width: 9;
+  stroke-linecap: round;
+  opacity: 0.9;
+}
+
+.plant-center-img {
+  object-fit: cover;
+  border-radius: var(--radius-pill);
+  transform: translate(-50%, -50%);
+}
+
+.detail-content h3 {
+  color: var(--color-active);
+}
+
+.water-btn {
+  border: none;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-active);
+  color: var(--color-surface);
+  cursor: pointer;
+}
+
+.water-btn:hover:not(:disabled) {
+  background-color: var(--color-active-strong);
+}
+
+.water-btn:focus-visible {
+  outline: var(--border-width) solid var(--color-font);
+  outline-offset: var(--border-width);
+}
+
+.water-btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.water-icon {
+  --icon: url("../img/watering.png");
+  background-color: currentColor;
+}
+
+.detail-facts {
+  background-color: var(--color-active-soft);
+  border-radius: var(--radius-panel);
+}
+
+.detail-facts dt {
+  color: var(--color-active);
+}

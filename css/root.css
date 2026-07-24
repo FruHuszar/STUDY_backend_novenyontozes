@@ -1,0 +1,60 @@
+:root {
+  --color-bg: #f8f7f1;
+  --color-surface: #fff;
+  --color-font: #2f3527;
+  --color-active: #5c7031;
+  --color-active-strong: #4a5b28;
+  --color-active-soft: #e8ecdc;
+  --color-middle: #8d9483;
+  --color-line: #c9cdb9;
+  --color-alert: #c0392b;
+
+  --color-bloom: #e3a2b5;
+  --color-prune: #7d8f5a;
+  --color-fruit: #c9772f;
+
+  --color-scrollbar-thumb: #6b7f58;
+  --color-scrollbar-track: var(--color-active-soft);
+
+  --font-body: Georgia, "Times New Roman", Times, serif;
+  --font-ui: Arial, Helvetica, sans-serif;
+
+  --text-sm: 0.78rem;
+  --text-md: 0.9rem;
+  --text-lg: 0.95rem;
+  --text-xl: 1.4rem;
+  --tracking-wide: 0.05em;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 14px;
+  --space-4: 18px;
+  --space-5: 24px;
+
+  --radius-panel: 10px;
+  --radius-pill: 999px;
+
+  --ring-width: 4px;
+  --border-width: 2px;
+
+  --duration-fast: 0.2s;
+  --duration-base: 0.25s;
+  --duration-slide: 0.45s;
+  --easing: ease;
+
+  --scrollbar-width: 10px;
+
+  --thumb-size: clamp(64px, calc(160px - 7vw), 70px);
+  --thumb-label-width: clamp(70px, calc(150px - 6vw), 100px);
+  --toggle-size: 40px;
+  --alert-dot-size: 14px;
+
+  --timeline-max-width: 420px;
+  --timeline-image-size: 46%;
+  --timeline-portrait-shift: 30%;
+  --timeline-portrait-image-offset: 80%;
+
+  --content-width: 90vw;
+  --content-max-width: 1100px;
+  --detail-max-width: 460px;
+}
