@@ -79,6 +79,7 @@ export default class AllFlowerDisplay {
 
       card.update(updated);
       this.#detailPanel.display(card.getData());
+      this.#detailPanel.setWatering(false);
     } catch (error) {
       this.#detailPanel.setWatering(false);
       window.alert(`Watering failed: ${error.message}`);

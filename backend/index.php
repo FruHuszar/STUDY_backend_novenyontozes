@@ -39,9 +39,15 @@ try {
 
     $router->dispatch(Request::fromGlobals());
 } catch (Throwable $failure) {
-    Response::error(500, 'Internal server error.', [
-        'message' => $failure->getMessage(),
-        'file' => $failure->getFile(),
-        'line' => $failure->getLine(),
-    ]);
+    error_log((string) $failure);
+
+    $details = Env::get('APP_DEBUG', '0') === '1'
+        ? [
+            'message' => $failure->getMessage(),
+            'file' => $failure->getFile(),
+            'line' => $failure->getLine(),
+        ]
+        : [];
+
+    Response::error(500, 'Internal server error.', $details);
 }

@@ -1,4 +1,5 @@
 import TimeUtils from "./TimeUtils.js";
+import ImageFallback from "./ImageFallback.js";
 
 export default class FlowerDisplay {
   #data;
@@ -20,12 +21,14 @@ export default class FlowerDisplay {
 
     card.innerHTML = `
       <div class="flower-thumb">
-        <img src="${this.#data.img}" alt="${this.#data.name}" />
+        <img src="${ImageFallback.src(this.#data.img)}" alt="${this.#data.name}" />
         <span class="alert-dot" hidden></span>
       </div>
       <h3>${this.#data.name}</h3>
       <p class="flower-timer"></p>
     `;
+
+    ImageFallback.attach(card.querySelector("img"));
 
     this.#timerNode = card.querySelector(".flower-timer");
     this.#alertNode = card.querySelector(".alert-dot");

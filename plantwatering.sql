@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `my_plant` (
   KEY `fk_my_plant_user` (`user_id`),
   KEY `fk_my_plant_species` (`species_id`),
   KEY `idx_my_plant_next_watering` (`next_watering`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `my_plant`
@@ -92,6 +92,17 @@ INSERT INTO `my_plant` (`id`, `nickname`, `location`, `watering_interval_hours`,
 (6, 'Fiddle', 'Office', 120, '2026-07-22 04:36:39', 1, 'Dropped two lower leaves after the move.', '2026-07-24 04:36:39', 2, 7),
 (7, 'Grandmother\'s jade', 'Bedroom shelf', NULL, '2026-07-29 04:36:39', 0, NULL, '2026-07-24 04:36:39', 3, 8),
 (8, 'Mountain rhodo', 'Shaded garden bed', 48, '2026-07-25 04:36:39', 0, 'Mulch with pine bark in autumn.', '2026-07-24 04:36:39', 3, 2);
+INSERT INTO `my_plant` (`id`, `nickname`, `location`, `watering_interval_hours`, `next_watering`, `needs_attention`, `note`, `created_at`, `user_id`, `species_id`) VALUES
+(9,  'Strawberry patch', 'Raised bed',       NULL, '2026-07-26 06:00:00', 0, 'Straw mulch under the fruit.',  '2026-07-24 04:36:39', 1, 9),
+(10, 'Raspberry canes',  'Back fence',       NULL, '2026-07-27 06:00:00', 0, NULL,                            '2026-07-24 04:36:39', 1, 10),
+(11, 'Cherry sapling',   'Front garden',     NULL, '2026-07-29 06:00:00', 0, 'Summer prune only.',            '2026-07-24 04:36:39', 1, 11),
+(12, 'Tomato pot',       'Balcony rail',     NULL, '2026-07-25 06:00:00', 1, 'Pinch the side shoots weekly.', '2026-07-24 04:36:39', 1, 12),
+(13, 'Chili plant',      'Kitchen window',   NULL, '2026-07-26 18:00:00', 0, NULL,                            '2026-07-24 04:36:39', 1, 13),
+(14, 'Orange tree',      'Conservatory',     NULL, '2026-07-28 06:00:00', 0, 'Feed with citrus fertiliser.',  '2026-07-24 04:36:39', 1, 14),
+(15, 'Meyer lemon',      'Patio container',  NULL, '2026-07-27 18:00:00', 0, NULL,                            '2026-07-24 04:36:39', 1, 15),
+(16, 'Passion vine',     'South wall',       NULL, '2026-07-26 12:00:00', 0, 'Tie in the new growth.',        '2026-07-24 04:36:39', 1, 16),
+(17, 'Blue passion',     'Sheltered corner', NULL, '2026-07-28 12:00:00', 0, NULL,                            '2026-07-24 04:36:39', 1, 17),
+(18, 'Pomegranate',      'Sunny terrace',    NULL, '2026-07-30 06:00:00', 0, 'Keep it dry over winter.',      '2026-07-24 04:36:39', 1, 18);
 
 -- --------------------------------------------------------
 
@@ -185,16 +196,16 @@ INSERT INTO `species` (`id`, `name`, `latin_name`, `image_url`, `habitat`, `ligh
 (6, 'Snake plant', 'Dracaena trifasciata', 'https://commons.wikimedia.org/wiki/Special:FilePath/Sansevieria_trifasciata_Prain_%2849388534642%29.jpg?width=400', 'Indoor, native to West Africa', 'Low to bright indirect', 336, 'Very drought tolerant succulent-leaved plant. Far more plants are lost to overwatering than to neglect.', 5),
 (7, 'Fiddle-leaf fig', 'Ficus lyrata', 'https://commons.wikimedia.org/wiki/Special:FilePath/Ficus_lyrata_DSCN4457.jpg?width=400', 'Indoor, native to West African lowland rainforest', 'Bright indirect', 168, 'Dislikes being moved and dislikes cold draughts. Water when the top few centimetres of the mix are dry.', 6),
 (8, 'Jade plant', 'Crassula ovata', 'https://commons.wikimedia.org/wiki/Special:FilePath/Crassula_ovata_-_Jade_Plant_-_South_Africa_7.JPG?width=400', 'Indoor, native to South Africa', 'Full sun to bright indirect', 336, 'Succulent with thick glossy leaves. Water deeply but rarely, and keep it nearly dry in winter.', 7),
-(9, 'Garden Strawberry', 'Fragaria x ananassa', 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Strawberries.jpg/800px-Strawberries.jpg', 'Outdoor garden beds, temperate zones', 'Full sun', 48, 'Low-growing perennial plant known for its sweet red fruit. Requires consistent moisture during fruiting.', 8),
-(10, 'Red Raspberry', 'Rubus idaeus', 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Raspberries_02.jpg/800px-Raspberries_02.jpg', 'Temperate thickets and woodland margins', 'Full sun to partial shade', 72, 'Deciduous fruiting cane producing sweet aggregate berries. Prune spent canes back annually.', 8),
-(11, 'Sweet Cherry', 'Prunus avium', 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Cherry_tree_Orgiva_Andalusia_Spain.jpg/800px-Cherry_tree_Orgiva_Andalusia_Spain.jpg', 'Temperate orchard regions, woodland edges', 'Full sun', 120, 'Deciduous fruit tree producing sweet dark berries. Prune in summer to reduce risk of silver leaf fungus.', 8),
-(12, 'Tomato', 'Solanum lycopersicum', 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Tomato_je.jpg/800px-Tomato_je.jpg', 'Vegetable gardens, native to South America', 'Full sun', 24, 'Popular warm-season crop. Benefits from regular pinching of side shoots (suckers) and steady moisture.', 9),
-(13, 'Chili Pepper', 'Capsicum annuum', 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Red_chili_pepper.jpg/800px-Red_chili_pepper.jpg', 'Warm sunny gardens or containers', 'Full sun', 48, 'Tender perennial grown as an annual. Produces spicy fruits that ripen from green to bright red.', 9),
-(14, 'Sweet Orange', 'Citrus x sinensis', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Orange-Fruit-Pieces.jpg/800px-Orange-Fruit-Pieces.jpg', 'Subtropical orchard or indoor sunny spot', 'Full sun', 96, 'Evergreen citrus tree with fragrant white blooms and sweet citrus fruits that ripen over winter.', 10),
-(15, 'Meyer Lemon', 'Citrus x meyeri', 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Meyer_lemon_3.jpg/800px-Meyer_lemon_3.jpg', 'Subtropical regions, patio containers', 'Full sun', 72, 'Compact citrus hybrid producing sweet, juicy yellow fruits. Flowers abundantly throughout spring and summer.', 10),
-(16, 'Purple Passion Fruit', 'Passiflora edulis', 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Passiflora_edulis_fruit.jpg/800px-Passiflora_edulis_fruit.jpg', 'Warm temperate to tropical climbing vine', 'Full sun', 48, 'Vigorous climber with striking flowers followed by aromatic, purple-skinned fruit rich in juice.', 11),
-(17, 'Blue Passionflower', 'Passiflora caerulea', 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Passiflora_caerulea_1.jpg/800px-Passiflora_caerulea_1.jpg', 'Sheltered outdoor walls, sunny gardens', 'Full sun', 72, 'Semi-evergreen climber producing elaborate blue-white blossoms and orange egg-shaped fruits.', 11),
-(18, 'Pomegranate', 'Punica granatum', 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Pomegranate_fruit.jpg/800px-Pomegranate_fruit.jpg', 'Dry Mediterranean and Middle Eastern regions', 'Full sun', 120, 'Drought-tolerant deciduous shrub bearing scarlet flowers and juicy, seed-filled fruits in autumn.', 12);
+(9, 'Garden Strawberry', 'Fragaria x ananassa', 'https://commons.wikimedia.org/wiki/Special:FilePath/Fragaria_ananassa_Senga_Sengana_2023-05-07_4572.jpg?width=400', 'Outdoor garden beds, temperate zones', 'Full sun', 48, 'Low-growing perennial plant known for its sweet red fruit. Requires consistent moisture during fruiting.', 8),
+(10, 'Red Raspberry', 'Rubus idaeus', 'https://commons.wikimedia.org/wiki/Special:FilePath/Raspberries_%28Rubus_idaeus%29.jpg?width=400', 'Temperate thickets and woodland margins', 'Full sun to partial shade', 72, 'Deciduous fruiting cane producing sweet aggregate berries. Prune spent canes back annually.', 8),
+(11, 'Sweet Cherry', 'Prunus avium', 'https://commons.wikimedia.org/wiki/Special:FilePath/Prunus_avium_kz3.JPG?width=400', 'Temperate orchard regions, woodland edges', 'Full sun', 120, 'Deciduous fruit tree producing sweet dark berries. Prune in summer to reduce risk of silver leaf fungus.', 8),
+(12, 'Tomato', 'Solanum lycopersicum', 'https://commons.wikimedia.org/wiki/Special:FilePath/Solanum_lycopersicum%2C_Tomate_3.JPG?width=400', 'Vegetable gardens, native to South America', 'Full sun', 24, 'Popular warm-season crop. Benefits from regular pinching of side shoots (suckers) and steady moisture.', 9),
+(13, 'Chili Pepper', 'Capsicum annuum', 'https://commons.wikimedia.org/wiki/Special:FilePath/Capsicum_annuum.JPG?width=400', 'Warm sunny gardens or containers', 'Full sun', 48, 'Tender perennial grown as an annual. Produces spicy fruits that ripen from green to bright red.', 9),
+(14, 'Sweet Orange', 'Citrus x sinensis', 'https://commons.wikimedia.org/wiki/Special:FilePath/Citrus_sinensis_JPG01.jpg?width=400', 'Subtropical orchard or indoor sunny spot', 'Full sun', 96, 'Evergreen citrus tree with fragrant white blooms and sweet citrus fruits that ripen over winter.', 10),
+(15, 'Meyer Lemon', 'Citrus x meyeri', 'https://commons.wikimedia.org/wiki/Special:FilePath/Starr-150326-0724-Citrus_meyeri-fruit-Citrus_Grove_Town_Sand_Island-Midway_Atoll_%2825148517712%29.jpg?width=400', 'Subtropical regions, patio containers', 'Full sun', 72, 'Compact citrus hybrid producing sweet, juicy yellow fruits. Flowers abundantly throughout spring and summer.', 10),
+(16, 'Purple Passion Fruit', 'Passiflora edulis', 'https://commons.wikimedia.org/wiki/Special:FilePath/Passiflora_edulis.JPG?width=400', 'Warm temperate to tropical climbing vine', 'Full sun', 48, 'Vigorous climber with striking flowers followed by aromatic, purple-skinned fruit rich in juice.', 11),
+(17, 'Blue Passionflower', 'Passiflora caerulea', 'https://commons.wikimedia.org/wiki/Special:FilePath/Passiflora_caerulea_L..jpg?width=400', 'Sheltered outdoor walls, sunny gardens', 'Full sun', 72, 'Semi-evergreen climber producing elaborate blue-white blossoms and orange egg-shaped fruits.', 11),
+(18, 'Pomegranate', 'Punica granatum', 'https://commons.wikimedia.org/wiki/Special:FilePath/Punica_granatum_004.JPG?width=400', 'Dry Mediterranean and Middle Eastern regions', 'Full sun', 120, 'Drought-tolerant deciduous shrub bearing scarlet flowers and juicy, seed-filled fruits in autumn.', 12);
 
 -- --------------------------------------------------------
 

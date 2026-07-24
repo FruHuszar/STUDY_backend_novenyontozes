@@ -50,9 +50,15 @@ final class WateringLogController
 
         $intervalHours = $this->plants->resolveIntervalHours($plantId);
 
+        if ($intervalHours === null || $intervalHours < 1) {
+            Response::error(422, 'No watering interval is configured for this plant.');
+
+            return;
+        }
+
         $log = $this->logs->createAndReschedule(
             new WateringLogModel(null, 'NOW', $amount !== null ? (int) $amount : null, (string) $source, $plantId),
-            (int) $intervalHours
+            $intervalHours
         );
 
         Response::created('/api/waterings/' . $log->getId(), $log);
