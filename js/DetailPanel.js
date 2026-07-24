@@ -1,4 +1,5 @@
 import TimeUtils from "./TimeUtils.js";
+import ImageFallback from "./ImageFallback.js";
 
 export default class DetailPanel {
   static #MONTHS = [
@@ -50,6 +51,8 @@ export default class DetailPanel {
     this.#currentData = plantData;
 
     this.#renderSkeleton();
+    ImageFallback.attach(this.#element.querySelector(".plant-center-img"));
+
     this.#renderTimeline();
     this.#attachToggleEvents();
     this.#attachWaterEvent();
@@ -79,7 +82,7 @@ export default class DetailPanel {
         <p class="phase-hint" aria-live="polite">${this.#hintText()}</p>
 
         <div class="timeline-wrapper">
-          <img src="${data.img}" alt="${data.name}" class="plant-center-img" />
+          <img src="${ImageFallback.src(data.img)}" alt="${data.name}" class="plant-center-img" />
           <svg class="timeline-svg" viewBox="0 0 ${size} ${size}" role="img" aria-label="${data.name} yearly cycle">
             <circle cx="${DetailPanel.#CENTER}" cy="${DetailPanel.#CENTER}" r="${DetailPanel.#RADIUS}" class="timeline-base-circle" />
             <g class="months-group"></g>
