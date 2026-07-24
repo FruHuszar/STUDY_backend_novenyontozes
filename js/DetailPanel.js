@@ -52,6 +52,7 @@ export default class DetailPanel {
     this.#renderSkeleton();
     this.#renderTimeline();
     this.#attachToggleEvents();
+    this.#attachWaterEvent();
 
     this.#element.classList.remove("is-entering");
     void this.#element.offsetWidth;
@@ -215,6 +216,38 @@ export default class DetailPanel {
           `<span class="${this.#activePhases[key] ? "" : "off"}">${phase.label}</span>`,
       )
       .join(" · ");
+  }
+
+  #attachWaterEvent() {
+    const button = this.#element.querySelector(".water-btn");
+
+    if (!button) return;
+
+    button.addEventListener("click", () => {
+      const waterEvent = new CustomEvent("flowerWater", {
+        bubbles: true,
+        detail: { id: this.#currentData.id },
+      });
+
+      this.#element.dispatchEvent(waterEvent);
+    });
+  }
+
+  setWatering(isWatering) {
+    const button = this.#element.querySelector(".water-btn");
+
+    if (!button) return;
+
+    button.disabled = isWatering;
+    button.textContent = isWatering ? "Watering..." : "\u{1F4A7} Water now";
+  }
+
+  getElement() {
+    return this.#element;
+  }
+
+  getData() {
+    return this.#currentData;
   }
 
   #attachToggleEvents() {
