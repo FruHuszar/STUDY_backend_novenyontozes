@@ -4,16 +4,13 @@
   box-sizing: border-box;
 }
 
-html {
-  height: 100%;
-}
-
 body {
-  min-height: 100%;
+  height: 100dvh;
   margin: 0;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 header,
@@ -22,6 +19,11 @@ footer {
   width: var(--content-width);
   max-width: var(--content-max-width);
   margin-inline: auto;
+}
+
+header,
+footer {
+  flex-shrink: 0;
 }
 
 main {
@@ -55,25 +57,23 @@ h1 {
 }
 
 .stage {
+  flex: 1;
+  min-height: 0;
   display: grid;
   gap: var(--space-5);
-  align-items: start;
 }
 
 body.has-detail .stage {
   grid-template-columns: minmax(120px, 170px) 1fr;
-  flex: 1;
-  min-height: 0;
-  height: 100%;
 }
 
 #flower-collection {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-content: flex-start;
   gap: var(--space-4);
   min-height: 0;
-  max-height: 100%;
   padding: var(--space-2) var(--space-1);
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -84,6 +84,7 @@ body.has-detail .stage {
   flex-direction: column;
   flex-wrap: nowrap;
   align-items: center;
+  justify-content: flex-start;
 }
 
 .flower-card {
@@ -122,7 +123,6 @@ body.has-detail .stage {
 #flower-detail {
   display: none;
   min-height: 0;
-  max-height: 100%;
   padding: var(--space-3) var(--space-5);
 }
 

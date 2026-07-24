@@ -5,6 +5,7 @@ import mockPlants from "./mockPlants.js";
 
 const API_BASE_URL = "http://localhost:8000";
 const USER_ID = 1;
+const LOCAL_HOSTNAMES = ["localhost", "127.0.0.1", ""];
 
 function toggleTrialNote(isBackendUp) {
   const note = document.querySelector("#trial-note");
@@ -13,17 +14,21 @@ function toggleTrialNote(isBackendUp) {
 }
 
 async function resolveSource() {
-  const api = new ApiClient(API_BASE_URL);
+  if (LOCAL_HOSTNAMES.includes(window.location.hostname)) {
+    const api = new ApiClient(API_BASE_URL);
 
-  try {
-    const plants = await api.getPlants(USER_ID);
+    try {
+      const plants = await api.getPlants(USER_ID);
 
-    return { client: api, plants, isBackendUp: true };
-  } catch (error) {
-    const mock = new MockApiClient(mockPlants);
-
-    return { client: mock, plants: await mock.getPlants(), isBackendUp: false };
+      return { client: api, plants, isBackendUp: true };
+    } catch (error) {
+      console.warn("Backend unreachable, showing demo data instead.", error);
+    }
   }
+
+  const mock = new MockApiClient(mockPlants);
+
+  return { client: mock, plants: await mock.getPlants(), isBackendUp: false };
 }
 
 async function start() {
