@@ -31,9 +31,8 @@ final class Router
         $this->register('DELETE', $pattern, $handler);
     }
 
-    public function dispatch(Request $request): void
+    public function dispatch(Request $request): Response
     {
-        $pathMatched = false;
         $allowed = [];
 
         foreach ($this->routes as $route) {
@@ -41,26 +40,19 @@ final class Router
                 continue;
             }
 
-            $pathMatched = true;
-            $allowed[] = $route['method'];
-
-            if ($route['method'] !== $request->getMethod()) {
-                continue;
+            if ($route['method'] === $request->getMethod()) {
+                return ($route['handler'])($request->withParameters($this->parameters($matches)));
             }
 
-            ($route['handler'])($request, $this->parameters($matches));
-
-            return;
+            $allowed[] = $route['method'];
         }
 
-        if ($pathMatched) {
-            header('Allow: ' . implode(', ', array_unique($allowed)));
-            Response::error(405, 'Method not allowed on this route.');
-
-            return;
+        if ($allowed !== []) {
+            return Response::error(405, 'Method not allowed on this route.')
+                ->withHeader('Allow', implode(', ', array_unique($allowed)));
         }
 
-        Response::error(404, 'Unknown route.');
+        return Response::error(404, 'Unknown route.');
     }
 
     private function register(string $method, string $pattern, callable $handler): void
@@ -82,14 +74,6 @@ final class Router
 
     private function parameters(array $matches): array
     {
-        $parameters = [];
-
-        foreach ($matches as $key => $value) {
-            if (is_string($key)) {
-                $parameters[$key] = $value;
-            }
-        }
-
-        return $parameters;
+        return array_filter($matches, static fn (string|int $key): bool => is_string($key), ARRAY_FILTER_USE_KEY);
     }
 }

@@ -2,31 +2,30 @@
 
 declare(strict_types=1);
 
-final class FamilyRepository
+final class FamilyRepository extends Repository implements FamilyRepositoryInterface
 {
-    private PDO $connection;
-
-    public function __construct(PDO $connection)
+    protected function table(): string
     {
-        $this->connection = $connection;
+        return 'family';
+    }
+
+    protected function selection(): string
+    {
+        return 'id, name';
+    }
+
+    protected function hydrate(array $row): FamilyModel
+    {
+        return FamilyModel::fromRow($row);
     }
 
     public function findAll(): array
     {
-        $statement = $this->connection->query('SELECT id, name FROM family ORDER BY name');
-
-        return array_map(
-            static fn (array $row): FamilyModel => FamilyModel::fromRow($row),
-            $statement->fetchAll()
-        );
+        return $this->select('ORDER BY name');
     }
 
     public function findById(int $id): ?FamilyModel
     {
-        $statement = $this->connection->prepare('SELECT id, name FROM family WHERE id = :id');
-        $statement->execute(['id' => $id]);
-        $row = $statement->fetch();
-
-        return $row === false ? null : FamilyModel::fromRow($row);
+        return $this->selectOne('WHERE id = :id', ['id' => $id]);
     }
 }

@@ -5,6 +5,27 @@ declare(strict_types=1);
 error_reporting(E_ALL);
 ini_set('display_errors', '0');
 
+spl_autoload_register(static function (string $class): void {
+    static $map = null;
+
+    if ($map === null) {
+        $map = [];
+        $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator(__DIR__, FilesystemIterator::SKIP_DOTS)
+        );
+
+        foreach ($files as $file) {
+            if ($file->getExtension() === 'php') {
+                $map[$file->getBasename('.php')] = $file->getPathname();
+            }
+        }
+    }
+
+    if (isset($map[$class])) {
+        require_once $map[$class];
+    }
+});
+
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
@@ -12,20 +33,9 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
     http_response_code(204);
+
     exit;
 }
-
-spl_autoload_register(static function (string $class): void {
-    foreach (['', 'config/', 'models/', 'repositories/', 'controllers/'] as $directory) {
-        $path = __DIR__ . '/' . $directory . $class . '.php';
-
-        if (is_readable($path)) {
-            require_once $path;
-
-            return;
-        }
-    }
-});
 
 try {
     Env::load(__DIR__ . '/.env');
@@ -37,17 +47,15 @@ try {
         (require $routeFile)($router, $connection);
     }
 
-    $router->dispatch(Request::fromGlobals());
+    $response = $router->dispatch(Request::fromGlobals());
+} catch (HttpException $failure) {
+    $response = Response::error($failure->getStatusCode(), $failure->getMessage(), $failure->getDetails());
 } catch (Throwable $failure) {
     error_log((string) $failure);
 
-    $details = Env::get('APP_DEBUG', '0') === '1'
-        ? [
-            'message' => $failure->getMessage(),
-            'file' => $failure->getFile(),
-            'line' => $failure->getLine(),
-        ]
-        : [];
-
-    Response::error(500, 'Internal server error.', $details);
+    $response = Response::error(500, 'Internal server error.', Env::get('APP_DEBUG', '0') === '1'
+        ? ['message' => $failure->getMessage(), 'file' => $failure->getFile(), 'line' => $failure->getLine()]
+        : []);
 }
+
+$response->send();

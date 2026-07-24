@@ -1,0 +1,82 @@
+body {
+  font-family: var(--font-body);
+}
+
+h1 {
+  letter-spacing: 0.06em;
+}
+
+.tagline,
+#trial-note,
+#flower-detail {
+  font-size: var(--text-md);
+}
+
+header,
+#trial-note,
+.flower-card,
+.phase-toggles,
+.detail-content {
+  text-align: center;
+}
+
+.flower-card h3 {
+  font-size: var(--text-lg);
+  word-break: break-word;
+}
+
+.flower-card p {
+  font-size: var(--text-sm);
+}
+
+.toggle-tip {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.phase-hint {
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+}
+
+.phase-hint .off {
+  text-decoration: line-through;
+}
+
+.month-text {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+}
+
+.detail-content h3 {
+  font-size: var(--text-xl);
+}
+
+.latin {
+  font-style: italic;
+}
+
+.detail-timer,
+.water-btn {
+  font-size: var(--text-lg);
+}
+
+.water-btn {
+  font-family: var(--font-body);
+}
+
+.detail-facts {
+  font-size: var(--text-md);
+  text-align: left;
+}
+
+.detail-facts dt {
+  font-weight: bold;
+}
+
+.detail-note {
+  font-size: var(--text-md);
+}

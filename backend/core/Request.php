@@ -4,22 +4,18 @@ declare(strict_types=1);
 
 final class Request
 {
-    private string $method;
-    private string $path;
-    private array $query;
-    private array $body;
-
-    private function __construct(string $method, string $path, array $query, array $body)
-    {
-        $this->method = $method;
-        $this->path = $path;
-        $this->query = $query;
-        $this->body = $body;
+    private function __construct(
+        private readonly string $method,
+        private readonly string $path,
+        private readonly array $query,
+        private readonly array $body,
+        private readonly array $parameters = []
+    ) {
     }
 
     public static function fromGlobals(): self
     {
-        $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/';
+        $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
         $base = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
 
         if ($base !== '/' && $base !== '' && str_starts_with($uri, $base)) {
@@ -36,6 +32,11 @@ final class Request
         );
     }
 
+    public function withParameters(array $parameters): self
+    {
+        return new self($this->method, $this->path, $this->query, $this->body, $parameters);
+    }
+
     public function getMethod(): string
     {
         return $this->method;
@@ -44,6 +45,22 @@ final class Request
     public function getPath(): string
     {
         return $this->path;
+    }
+
+    public function getBody(): array
+    {
+        return $this->body;
+    }
+
+    public function id(string $key = 'id'): int
+    {
+        $value = $this->parameters[$key] ?? '';
+
+        if (!ctype_digit($value)) {
+            throw new NotFoundException('Unknown route.');
+        }
+
+        return (int) $value;
     }
 
     public function query(string $key, ?string $default = null): ?string
@@ -60,18 +77,8 @@ final class Request
         return $value !== null && ctype_digit($value) ? (int) $value : null;
     }
 
-    public function getBody(): array
+    public function validator(): Validator
     {
-        return $this->body;
-    }
-
-    public function has(string $key): bool
-    {
-        return array_key_exists($key, $this->body);
-    }
-
-    public function input(string $key, mixed $default = null): mixed
-    {
-        return $this->body[$key] ?? $default;
+        return Validator::make($this->body);
     }
 }

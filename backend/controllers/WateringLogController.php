@@ -4,68 +4,33 @@ declare(strict_types=1);
 
 final class WateringLogController
 {
-    private WateringLogRepository $logs;
-    private PlantRepository $plants;
+    private const SOURCES = ['manual', 'auto'];
 
-    public function __construct(WateringLogRepository $logs, PlantRepository $plants)
+    public function __construct(private readonly WateringService $waterings)
     {
-        $this->logs = $logs;
-        $this->plants = $plants;
     }
 
-    public function index(int $plantId): void
+    public function index(Request $request): Response
     {
-        if ($this->plants->findById($plantId) === null) {
-            Response::error(404, 'Plant not found.');
-
-            return;
-        }
-
-        Response::json(200, $this->logs->findByPlant($plantId));
+        return Response::json(200, $this->waterings->history($request->id()));
     }
 
-    public function store(int $plantId, Request $request): void
+    public function store(Request $request): Response
     {
-        if ($this->plants->findById($plantId) === null) {
-            Response::error(404, 'Plant not found.');
+        $validator = $request->validator();
 
-            return;
-        }
+        $amountMl = $validator->optionalNonNegativeInt('amountMl');
+        $source = $validator->enum('source', self::SOURCES, 'manual');
 
-        $amount = $request->input('amountMl');
+        $validator->assertValid();
 
-        if ($amount !== null && (!is_numeric($amount) || (int) $amount < 0)) {
-            Response::error(422, 'The amountMl field must be a non-negative number.');
+        $log = $this->waterings->water($request->id(), $amountMl, $source);
 
-            return;
-        }
-
-        $source = $request->input('source', 'manual');
-
-        if (!in_array($source, ['manual', 'auto'], true)) {
-            Response::error(422, 'The source field must be manual or auto.');
-
-            return;
-        }
-
-        $intervalHours = $this->plants->resolveIntervalHours($plantId);
-
-        if ($intervalHours === null || $intervalHours < 1) {
-            Response::error(422, 'No watering interval is configured for this plant.');
-
-            return;
-        }
-
-        $log = $this->logs->createAndReschedule(
-            new WateringLogModel(null, 'NOW', $amount !== null ? (int) $amount : null, (string) $source, $plantId),
-            $intervalHours
-        );
-
-        Response::created('/api/waterings/' . $log->getId(), $log);
+        return Response::created('/api/waterings/' . $log->getId(), $log);
     }
 
-    public function statistics(): void
+    public function statistics(Request $request): Response
     {
-        Response::json(200, $this->logs->averageIntervalHoursByPlant());
+        return Response::json(200, $this->waterings->statistics());
     }
 }

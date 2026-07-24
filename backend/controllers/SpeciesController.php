@@ -4,56 +4,27 @@ declare(strict_types=1);
 
 final class SpeciesController
 {
-    private SpeciesRepository $species;
-    private FamilyRepository $families;
-    private PhaseRepository $phases;
-
-    public function __construct(SpeciesRepository $species, FamilyRepository $families, PhaseRepository $phases)
+    public function __construct(private readonly SpeciesService $species)
     {
-        $this->species = $species;
-        $this->families = $families;
-        $this->phases = $phases;
     }
 
-    public function index(Request $request): void
+    public function index(Request $request): Response
     {
-        $month = $request->queryInt('bloomingIn');
-
-        if ($month !== null) {
-            if ($month < 1 || $month > 12) {
-                Response::error(422, 'The bloomingIn parameter must be a month between 1 and 12.');
-
-                return;
-            }
-
-            Response::json(200, $this->species->findBloomingInMonth($month));
-
-            return;
-        }
-
-        Response::json(200, $this->species->findAll());
+        return Response::json(200, SpeciesResource::collection($this->species->list($request->queryInt('bloomingIn'))));
     }
 
-    public function show(int $id): void
+    public function show(Request $request): Response
     {
-        $species = $this->species->findById($id);
-
-        if ($species === null) {
-            Response::error(404, 'Species not found.');
-
-            return;
-        }
-
-        Response::json(200, $species);
+        return Response::json(200, SpeciesResource::make($this->species->find($request->id())));
     }
 
-    public function families(): void
+    public function families(Request $request): Response
     {
-        Response::json(200, $this->families->findAll());
+        return Response::json(200, $this->species->families());
     }
 
-    public function phases(): void
+    public function phases(Request $request): Response
     {
-        Response::json(200, $this->phases->findAll());
+        return Response::json(200, $this->species->phases());
     }
 }

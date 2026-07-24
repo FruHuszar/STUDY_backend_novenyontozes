@@ -4,19 +4,13 @@ declare(strict_types=1);
 
 final class WateringLogModel implements JsonSerializable
 {
-    private ?int $id;
-    private string $wateredAt;
-    private ?int $amountMl;
-    private string $source;
-    private int $myPlantId;
-
-    public function __construct(?int $id, string $wateredAt, ?int $amountMl, string $source, int $myPlantId)
-    {
-        $this->id = $id;
-        $this->wateredAt = $wateredAt;
-        $this->amountMl = $amountMl;
-        $this->source = $source;
-        $this->myPlantId = $myPlantId;
+    public function __construct(
+        private readonly ?int $id,
+        private readonly ?string $wateredAt,
+        private readonly ?int $amountMl,
+        private readonly string $source,
+        private readonly int $myPlantId
+    ) {
     }
 
     public static function fromRow(array $row): self
@@ -35,7 +29,7 @@ final class WateringLogModel implements JsonSerializable
         return $this->id;
     }
 
-    public function getWateredAt(): string
+    public function getWateredAt(): ?string
     {
         return $this->wateredAt;
     }
@@ -59,7 +53,7 @@ final class WateringLogModel implements JsonSerializable
     {
         return [
             'id' => $this->id,
-            'wateredAt' => str_replace(' ', 'T', $this->wateredAt),
+            'wateredAt' => $this->wateredAt !== null ? str_replace(' ', 'T', $this->wateredAt) : null,
             'amountMl' => $this->amountMl,
             'source' => $this->source,
             'plantId' => $this->myPlantId,

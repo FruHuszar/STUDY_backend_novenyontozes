@@ -1,0 +1,77 @@
+@media (orientation: portrait) {
+  header,
+  main,
+  footer {
+    width: 95vw;
+  }
+
+  body.has-detail .stage {
+    grid-template-columns: minmax(90px, 110px) 1fr;
+    gap: var(--space-2);
+  }
+
+  #flower-detail {
+    padding-inline: var(--space-2);
+  }
+
+  .phase-toggles {
+    justify-content: flex-end;
+  }
+
+  .toggle-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .toggle-tip {
+    display: none;
+  }
+
+  .phase-hint {
+    display: block;
+    text-align: right;
+  }
+
+  .timeline-wrapper {
+    width: 120%;
+    max-width: none;
+    margin-top: var(--space-2);
+  }
+
+  .timeline-svg {
+    transform: translateX(var(--timeline-portrait-shift));
+  }
+
+  .plant-center-img {
+    left: var(--timeline-portrait-image-offset);
+  }
+
+  .month-text {
+    font-size: 13px;
+  }
+
+  .detail-content h3,
+  .latin,
+  .detail-timer,
+  .detail-note {
+    text-align: right;
+  }
+}
+
+@media (orientation: landscape) {
+  h1,
+  .tagline {
+    text-align: left;
+  }
+
+  .timeline-wrapper {
+    max-width: min(550px, 50vh);
+    margin-top: var(--space-3);
+  }
+
+  .detail-content {
+    max-width: var(--detail-max-width);
+    margin: 0 auto;
+    padding-bottom: 12px;
+  }
+}

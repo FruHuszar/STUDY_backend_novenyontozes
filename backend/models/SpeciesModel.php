@@ -2,44 +2,21 @@
 
 declare(strict_types=1);
 
-final class SpeciesModel implements JsonSerializable
+final class SpeciesModel
 {
-    private ?int $id;
-    private string $name;
-    private string $latinName;
-    private ?string $imageUrl;
-    private ?string $habitat;
-    private ?string $lightNeed;
-    private int $wateringIntervalHours;
-    private ?string $description;
-    private int $familyId;
-    private ?string $familyName;
-    private array $phases;
-
     public function __construct(
-        ?int $id,
-        string $name,
-        string $latinName,
-        ?string $imageUrl,
-        ?string $habitat,
-        ?string $lightNeed,
-        int $wateringIntervalHours,
-        ?string $description,
-        int $familyId,
-        ?string $familyName = null,
-        array $phases = []
+        private readonly ?int $id,
+        private readonly string $name,
+        private readonly string $latinName,
+        private readonly ?string $imageUrl,
+        private readonly ?string $habitat,
+        private readonly ?string $lightNeed,
+        private readonly int $wateringIntervalHours,
+        private readonly ?string $description,
+        private readonly int $familyId,
+        private readonly ?string $familyName = null,
+        private readonly array $phases = []
     ) {
-        $this->id = $id;
-        $this->name = $name;
-        $this->latinName = $latinName;
-        $this->imageUrl = $imageUrl;
-        $this->habitat = $habitat;
-        $this->lightNeed = $lightNeed;
-        $this->wateringIntervalHours = $wateringIntervalHours;
-        $this->description = $description;
-        $this->familyId = $familyId;
-        $this->familyName = $familyName;
-        $this->phases = $phases;
     }
 
     public static function fromRow(array $row): self
@@ -56,26 +33,6 @@ final class SpeciesModel implements JsonSerializable
             (int) $row['family_id'],
             isset($row['family_name']) ? (string) $row['family_name'] : null
         );
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function getWateringIntervalHours(): int
-    {
-        return $this->wateringIntervalHours;
-    }
-
-    public function getFamilyId(): int
-    {
-        return $this->familyId;
     }
 
     public function withPhases(array $phases): self
@@ -95,21 +52,58 @@ final class SpeciesModel implements JsonSerializable
         );
     }
 
-    public function jsonSerialize(): array
+    public function getId(): ?int
     {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'latin' => $this->latinName,
-            'img' => $this->imageUrl,
-            'wateringIntervalHours' => $this->wateringIntervalHours,
-            'note' => $this->description,
-            'facts' => [
-                ['label' => 'Family', 'value' => $this->familyName],
-                ['label' => 'Habitat', 'value' => $this->habitat],
-                ['label' => 'Light', 'value' => $this->lightNeed],
-            ],
-            'phases' => $this->phases,
-        ];
+        return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getLatinName(): string
+    {
+        return $this->latinName;
+    }
+
+    public function getImageUrl(): ?string
+    {
+        return $this->imageUrl;
+    }
+
+    public function getHabitat(): ?string
+    {
+        return $this->habitat;
+    }
+
+    public function getLightNeed(): ?string
+    {
+        return $this->lightNeed;
+    }
+
+    public function getWateringIntervalHours(): int
+    {
+        return $this->wateringIntervalHours;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function getFamilyId(): int
+    {
+        return $this->familyId;
+    }
+
+    public function getFamilyName(): ?string
+    {
+        return $this->familyName;
+    }
+
+    public function getPhases(): array
+    {
+        return $this->phases;
     }
 }

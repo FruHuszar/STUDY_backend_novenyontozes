@@ -2,34 +2,42 @@
 
 declare(strict_types=1);
 
-final class UserRepository
+final class UserRepository extends Repository implements UserRepositoryInterface
 {
-    private const COLUMNS = 'id, email, password_hash, name, notify_email, notify_push, created_at';
-
-    private PDO $connection;
-
-    public function __construct(PDO $connection)
+    protected function table(): string
     {
-        $this->connection = $connection;
+        return 'user';
+    }
+
+    protected function selection(): string
+    {
+        return 'id, email, password_hash, name, notify_email, notify_push, created_at';
+    }
+
+    protected function hydrate(array $row): UserModel
+    {
+        return UserModel::fromRow($row);
+    }
+
+    protected function writableColumns(): array
+    {
+        return [
+            'email' => 'email',
+            'passwordHash' => 'password_hash',
+            'name' => 'name',
+            'notifyEmail' => 'notify_email',
+            'notifyPush' => 'notify_push',
+        ];
     }
 
     public function findAll(): array
     {
-        $statement = $this->connection->query('SELECT ' . self::COLUMNS . ' FROM user ORDER BY id');
-
-        return array_map(
-            static fn (array $row): UserModel => UserModel::fromRow($row),
-            $statement->fetchAll()
-        );
+        return $this->select('ORDER BY id');
     }
 
     public function findById(int $id): ?UserModel
     {
-        $statement = $this->connection->prepare('SELECT ' . self::COLUMNS . ' FROM user WHERE id = :id');
-        $statement->execute(['id' => $id]);
-        $row = $statement->fetch();
-
-        return $row === false ? null : UserModel::fromRow($row);
+        return $this->selectOne('WHERE id = :id', ['id' => $id]);
     }
 
     public function emailExists(string $email, ?int $exceptId = null): bool
@@ -42,58 +50,30 @@ final class UserRepository
             $parameters['id'] = $exceptId;
         }
 
-        $statement = $this->connection->prepare($sql);
-        $statement->execute($parameters);
-
-        return $statement->fetch() !== false;
+        return $this->run($sql, $parameters)->fetch() !== false;
     }
 
     public function create(UserModel $user): UserModel
     {
-        $statement = $this->connection->prepare(
+        $this->run(
             'INSERT INTO user (email, password_hash, name, notify_email, notify_push)
-             VALUES (:email, :password_hash, :name, :notify_email, :notify_push)'
+             VALUES (:email, :password_hash, :name, :notify_email, :notify_push)',
+            [
+                'email' => $user->getEmail(),
+                'password_hash' => $user->getPasswordHash(),
+                'name' => $user->getName(),
+                'notify_email' => $user->isNotifyEmail() ? 1 : 0,
+                'notify_push' => $user->isNotifyPush() ? 1 : 0,
+            ]
         );
 
-        $statement->execute([
-            'email' => $user->getEmail(),
-            'password_hash' => $user->getPasswordHash(),
-            'name' => $user->getName(),
-            'notify_email' => $user->isNotifyEmail() ? 1 : 0,
-            'notify_push' => $user->isNotifyPush() ? 1 : 0,
-        ]);
-
-        return $this->findById((int) $this->connection->lastInsertId());
+        return $this->findById($this->lastInsertId());
     }
 
     public function update(int $id, array $changes): ?UserModel
     {
-        $allowed = ['email', 'password_hash', 'name', 'notify_email', 'notify_push'];
-        $assignments = [];
-        $parameters = ['id' => $id];
-
-        foreach ($allowed as $column) {
-            if (array_key_exists($column, $changes)) {
-                $assignments[] = "{$column} = :{$column}";
-                $parameters[$column] = $changes[$column];
-            }
-        }
-
-        if ($assignments === []) {
-            return $this->findById($id);
-        }
-
-        $statement = $this->connection->prepare('UPDATE user SET ' . implode(', ', $assignments) . ' WHERE id = :id');
-        $statement->execute($parameters);
+        $this->applyChanges($id, $changes);
 
         return $this->findById($id);
-    }
-
-    public function delete(int $id): bool
-    {
-        $statement = $this->connection->prepare('DELETE FROM user WHERE id = :id');
-        $statement->execute(['id' => $id]);
-
-        return $statement->rowCount() > 0;
     }
 }

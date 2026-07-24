@@ -4,60 +4,32 @@ declare(strict_types=1);
 
 final class NotificationController
 {
-    private NotificationRepository $notifications;
-
-    public function __construct(NotificationRepository $notifications)
+    public function __construct(private readonly NotificationService $notifications)
     {
-        $this->notifications = $notifications;
     }
 
-    public function index(Request $request): void
+    public function index(Request $request): Response
     {
-        $userId = $request->queryInt('userId');
-
-        if ($userId === null) {
-            Response::json(200, $this->notifications->findAll());
-
-            return;
-        }
-
-        $unreadOnly = $request->query('unread');
-
-        Response::json(200, $this->notifications->findByUser($userId, $unreadOnly === '1' ? false : null));
+        return Response::json(200, $this->notifications->list(
+            $request->queryInt('userId'),
+            $request->query('unread') === '1'
+        ));
     }
 
-    public function show(int $id): void
+    public function show(Request $request): Response
     {
-        $notification = $this->notifications->findById($id);
-
-        if ($notification === null) {
-            Response::error(404, 'Notification not found.');
-
-            return;
-        }
-
-        Response::json(200, $notification);
+        return Response::json(200, $this->notifications->find($request->id()));
     }
 
-    public function markAsRead(int $id): void
+    public function markAsRead(Request $request): Response
     {
-        if ($this->notifications->findById($id) === null) {
-            Response::error(404, 'Notification not found.');
-
-            return;
-        }
-
-        Response::json(200, $this->notifications->markAsRead($id));
+        return Response::json(200, $this->notifications->markAsRead($request->id()));
     }
 
-    public function destroy(int $id): void
+    public function destroy(Request $request): Response
     {
-        if (!$this->notifications->delete($id)) {
-            Response::error(404, 'Notification not found.');
+        $this->notifications->delete($request->id());
 
-            return;
-        }
-
-        Response::noContent();
+        return Response::noContent();
     }
 }

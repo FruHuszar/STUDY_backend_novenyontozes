@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 return static function (Router $router, PDO $connection): void {
-    $controller = new UserController(new UserRepository($connection));
+    $controller = new UserController(new UserService(new UserRepository($connection)));
 
-    $router->get('/api/users', static fn (Request $request, array $parameters): mixed => $controller->index());
-    $router->post('/api/users', static fn (Request $request, array $parameters): mixed => $controller->store($request));
-    $router->get('/api/users/{id}', static fn (Request $request, array $parameters): mixed => $controller->show((int) $parameters['id']));
-    $router->patch('/api/users/{id}', static fn (Request $request, array $parameters): mixed => $controller->update((int) $parameters['id'], $request));
-    $router->delete('/api/users/{id}', static fn (Request $request, array $parameters): mixed => $controller->destroy((int) $parameters['id']));
+    $router->get('/api/users', [$controller, 'index']);
+    $router->post('/api/users', [$controller, 'store']);
+    $router->get('/api/users/{id}', [$controller, 'show']);
+    $router->patch('/api/users/{id}', [$controller, 'update']);
+    $router->delete('/api/users/{id}', [$controller, 'destroy']);
 };

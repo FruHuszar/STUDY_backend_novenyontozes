@@ -3,12 +3,13 @@
 declare(strict_types=1);
 
 return static function (Router $router, PDO $connection): void {
-    $controller = new WateringLogController(
+    $controller = new WateringLogController(new WateringService(
         new WateringLogRepository($connection),
-        new PlantRepository($connection)
-    );
+        new PlantRepository($connection),
+        new TransactionManager($connection)
+    ));
 
-    $router->get('/api/waterings/statistics', static fn (Request $request, array $parameters): mixed => $controller->statistics());
-    $router->get('/api/plants/{id}/waterings', static fn (Request $request, array $parameters): mixed => $controller->index((int) $parameters['id']));
-    $router->post('/api/plants/{id}/waterings', static fn (Request $request, array $parameters): mixed => $controller->store((int) $parameters['id'], $request));
+    $router->get('/api/waterings/statistics', [$controller, 'statistics']);
+    $router->get('/api/plants/{id}/waterings', [$controller, 'index']);
+    $router->post('/api/plants/{id}/waterings', [$controller, 'store']);
 };

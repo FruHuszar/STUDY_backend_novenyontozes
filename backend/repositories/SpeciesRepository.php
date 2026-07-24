@@ -2,45 +2,39 @@
 
 declare(strict_types=1);
 
-final class SpeciesRepository
+final class SpeciesRepository extends Repository implements SpeciesRepositoryInterface
 {
-    private const COLUMNS = 's.id, s.name, s.latin_name, s.image_url, s.habitat, s.light_need,
-                             s.watering_interval_hours, s.description, s.family_id, f.name AS family_name';
-
-    private PDO $connection;
-
-    public function __construct(PDO $connection)
+    protected function table(): string
     {
-        $this->connection = $connection;
+        return 'species';
+    }
+
+    protected function source(): string
+    {
+        return 'species s JOIN family f ON f.id = s.family_id';
+    }
+
+    protected function selection(): string
+    {
+        return 's.id, s.name, s.latin_name, s.image_url, s.habitat, s.light_need,
+                s.watering_interval_hours, s.description, s.family_id, f.name AS family_name';
+    }
+
+    protected function hydrate(array $row): SpeciesModel
+    {
+        return SpeciesModel::fromRow($row);
     }
 
     public function findAll(): array
     {
-        $statement = $this->connection->query(
-            'SELECT ' . self::COLUMNS . ' FROM species s JOIN family f ON f.id = s.family_id ORDER BY s.name'
-        );
-
-        return $this->attachPhases(array_map(
-            static fn (array $row): SpeciesModel => SpeciesModel::fromRow($row),
-            $statement->fetchAll()
-        ));
+        return $this->withPhases($this->select('ORDER BY s.name'));
     }
 
     public function findById(int $id): ?SpeciesModel
     {
-        $statement = $this->connection->prepare(
-            'SELECT ' . self::COLUMNS . ' FROM species s JOIN family f ON f.id = s.family_id WHERE s.id = :id'
-        );
-        $statement->execute(['id' => $id]);
-        $row = $statement->fetch();
+        $species = $this->select('WHERE s.id = :id LIMIT 1', ['id' => $id]);
 
-        if ($row === false) {
-            return null;
-        }
-
-        $withPhases = $this->attachPhases([SpeciesModel::fromRow($row)]);
-
-        return $withPhases[0];
+        return $this->withPhases($species)[0] ?? null;
     }
 
     public function findByIds(array $ids): array
@@ -49,83 +43,58 @@ final class SpeciesRepository
             return [];
         }
 
-        $placeholders = implode(', ', array_fill(0, count($ids), '?'));
-        $statement = $this->connection->prepare(
-            'SELECT ' . self::COLUMNS . " FROM species s JOIN family f ON f.id = s.family_id WHERE s.id IN ({$placeholders})"
+        $species = $this->withPhases(
+            $this->select('WHERE s.id IN (' . $this->placeholders($ids) . ')', array_values($ids))
         );
-        $statement->execute(array_values($ids));
-
-        $models = $this->attachPhases(array_map(
-            static fn (array $row): SpeciesModel => SpeciesModel::fromRow($row),
-            $statement->fetchAll()
-        ));
 
         $indexed = [];
 
-        foreach ($models as $model) {
-            $indexed[$model->getId()] = $model;
+        foreach ($species as $item) {
+            $indexed[$item->getId()] = $item;
         }
 
         return $indexed;
     }
 
-    public function exists(int $id): bool
-    {
-        $statement = $this->connection->prepare('SELECT 1 FROM species WHERE id = :id');
-        $statement->execute(['id' => $id]);
-
-        return $statement->fetch() !== false;
-    }
-
     public function findBloomingInMonth(int $month): array
     {
-        $statement = $this->connection->prepare(
-            'SELECT ' . self::COLUMNS . '
-             FROM species s
-             JOIN family f ON f.id = s.family_id
-             JOIN species_phase sp ON sp.species_id = s.id
+        return $this->withPhases($this->select(
+            'JOIN species_phase sp ON sp.species_id = s.id
              JOIN phase p ON p.id = sp.phase_id
              WHERE p.code = :code AND sp.month = :month
-             ORDER BY s.name'
-        );
-        $statement->execute(['code' => 'blooming', 'month' => $month]);
-
-        return $this->attachPhases(array_map(
-            static fn (array $row): SpeciesModel => SpeciesModel::fromRow($row),
-            $statement->fetchAll()
+             ORDER BY s.name',
+            ['code' => 'blooming', 'month' => $month]
         ));
     }
 
-    private function attachPhases(array $models): array
+    private function withPhases(array $species): array
     {
-        if ($models === []) {
+        if ($species === []) {
             return [];
         }
 
-        $ids = array_map(static fn (SpeciesModel $model): int => (int) $model->getId(), $models);
-        $phases = $this->findPhasesBySpeciesIds($ids);
+        $phases = $this->findPhases(array_map(static fn (SpeciesModel $item): int => (int) $item->getId(), $species));
 
         return array_map(
-            static fn (SpeciesModel $model): SpeciesModel => $model->withPhases($phases[$model->getId()] ?? []),
-            $models
+            static fn (SpeciesModel $item): SpeciesModel => $item->withPhases($phases[$item->getId()] ?? []),
+            $species
         );
     }
 
-    private function findPhasesBySpeciesIds(array $ids): array
+    private function findPhases(array $speciesIds): array
     {
-        $placeholders = implode(', ', array_fill(0, count($ids), '?'));
-        $statement = $this->connection->prepare(
-            "SELECT sp.species_id, p.code, sp.month
+        $rows = $this->run(
+            'SELECT sp.species_id, p.code, sp.month
              FROM species_phase sp
              JOIN phase p ON p.id = sp.phase_id
-             WHERE sp.species_id IN ({$placeholders})
-             ORDER BY sp.month"
-        );
-        $statement->execute(array_values($ids));
+             WHERE sp.species_id IN (' . $this->placeholders($speciesIds) . ')
+             ORDER BY sp.month',
+            array_values($speciesIds)
+        )->fetchAll();
 
         $grouped = [];
 
-        foreach ($statement->fetchAll() as $row) {
+        foreach ($rows as $row) {
             $grouped[(int) $row['species_id']][(string) $row['code']][] = (int) $row['month'];
         }
 

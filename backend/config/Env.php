@@ -10,16 +10,16 @@ final class Env
             throw new RuntimeException("The .env file is not readable: {$path}");
         }
 
-        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
-        foreach ($lines as $line) {
+        foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [] as $line) {
             $line = trim($line);
 
-            if ($line === '' || str_starts_with($line, '#')) {
+            if ($line === '' || str_starts_with($line, '#') || !str_contains($line, '=')) {
                 continue;
             }
 
             [$name, $value] = array_map('trim', explode('=', $line, 2));
+
+            $value = trim($value, "\"'");
 
             $_ENV[$name] = $value;
             putenv("{$name}={$value}");
@@ -30,6 +30,6 @@ final class Env
     {
         $value = $_ENV[$key] ?? getenv($key);
 
-        return $value !== false && $value !== null ? $value : $default;
+        return is_string($value) && $value !== '' ? $value : $default;
     }
 }
